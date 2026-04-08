@@ -1,0 +1,388 @@
+
+Function VerificaIni: Boolean;
+Inicializacao;
+var wIniName: String;
+    wIni: TIniFile;
+    wCta: Integer;
+    wParam,wFilePrm: String;
+const xErro: String = 'erro';
+
+begin
+  Result := True;
+  FGen.Memo1.Lines.Clear;
+  FGen.Memo1.Lines.Add('Verificação arquivos de inicialização');
+  FGen.Memo1.Lines.Add('Estacao.ini');
+
+  //.ini de conexão e identificação dos parametros gerais do sistema  (Estacao.ini)
+  wIniName := FGen.appPath + 'Estacao.ini';
+  wIni := TIniFile.Create(wIniName);
+  if not FileExists(wIniName)
+  then begin
+    FGen.Memo1.Lines.Add('Estacao.ini inexistente');
+    FGen.Memo1.Lines.Add('[Conexao]').
+    FGen.Memo1.Lines.Add('Drive=DriveRemoto:');
+    FGen.Memo1.Lines.Add('Path=C:\Caminho_da_conexão');
+    FGen.Memo1.Lines.Add('Senha=Senha_para_conexão');
+    FGen.Memo1.Lines.Add('Desconecta=S ou N');
+    FGen.Memo1.Lines.Add('Usuario=Usuario_da_aplicação');
+    FGen.Memo1.Lines.Add('[Dados]');
+    FGen.Memo1.Lines.Add('Parametros=drv:\Sisv.ini');
+    FGen.Memo1.Lines.Add('PathLocal=Path_dos_dados_locais');
+    FGen.Memo1.Lines.Add('PathRelatorios=Path_relatorios');
+  end
+  else begin
+    FGen.Memo1.Lines.Add('Estacao.ini - verificando');
+    wCta := FGen.Memo1.Lines.Count;
+    wParam := wIni.ReadString('Conexao','Drive',xErro);
+    if wParam = xErro then FGen.Memo1.Lines.Add('Conexao - Drive');
+    wParam := wIni.ReadString('Conexao','Path',xErro);
+    if wParam = xErro then FGen.Memo1.Lines.Add('Conexao - Path');
+    wParam := wIni.ReadString('Conexao','Senha',xErro);
+    if wParam = xErro then FGen.Memo1.Lines.Add('Conexao - Senha');
+    wParam := wIni.ReadString('Conexao','Desconecta',xErro);
+    if wParam = xErro then FGen.Memo1.Lines.Add('Conexao - Desconecta');
+    wParam := wIni.ReadString('Conexao','Usuario',xErro);
+    if wParam = xErro then FGen.Memo1.Lines.Add('Conexao - Usuario');
+    wFilePrm := wIni.ReadString('Dados','Parametros',xErro);
+    if wFilePrm = xErro then FGen.Memo1.Lines.Add('Dados - Parametro');
+    wParam := wIni.ReadString('Dados','PathLocal',xErro);
+    if wParam = xErro then FGen.Memo1.Lines.Add('Dados - PathLocal');
+    wParam := wIni.ReadString('Dados','PathRelatorios',xErro);
+    if wParam = xErro then FGen.Memo1.Lines.Add('Dados - PathRelatorios');
+    if FGen.Memo1.Lines.Count <> wCta then Result := False;
+  end;
+  wIni.Free;
+
+  if Result
+  then begin
+    wIniName := wFilePrm;
+    wIni := TIniFile.Create(wIniName);
+    if not FileExists(wIniName)
+    then begin
+    wIni.WriteString('Identificacao','Sistema','SISV');
+    wIni.WriteString('Identificacao','Empresa','Demonstração Ltda.');
+    wIni.WriteString('Dados','DatabaseName','SISV4');
+    wIni.WriteString('Dados','DatabasePath','\SISV\Dados');
+    wIni.WriteString('Dados','Servidor','N');
+    wIni.WriteString('Dados','LiteFull','F');
+    wIni.WriteString('Dados','PathAuxiliar','C:\Remessas');
+    wIni.WriteString('Dados','SenhaExclus','SUPERMOUSE');
+
+    wIni.WriteInteger('Padroes','EmpresaFilial',1);
+    wIni.WriteString('Padroes','Cidade','Caxias do Sul');
+    wIni.WriteString('Padroes','Estado','RS');
+    wIni.WriteString('Padroes','AtualizaCadastro','S');
+    wIni.WriteString('Padroes','UtilizaCEP','S');
+    wIni.WriteString('Padroes','CadasLogFile','C:\SISV\Dados\LogCadastro.log');
+    wIni.WriteString('Padroes','TranspLogFile','C:\SISV\Dados\LogTransport.log');
+    wIni.WriteString('Padroes','EmpregLogFile','C:\SISV\Dados\LogEmpregad.log');
+    wIni.WriteString('Padroes','PagRecLogFile','C:\SISV\Dados\LogPagRec.log');
+    wIni.WriteInteger('Padroes','PeriodoContaCorrente',90);
+
+    wIni.WriteString('Financeiro','DetRubricas','N');
+    wIni.WriteString('Financeiro','Juros','M');
+    wIni.WriteFloat('Financeiro','PercJuros',5);
+    wIni.WriteFloat('Financeiro','PercDesc',5);
+    wIni.WriteFloat('Financeiro','PercMulta',3);
+    wIni.WriteString('Financeiro','Cobranca','B');
+    wIni.WriteInteger('Financeiro','DocPagar',1);
+    wIni.WriteInteger('Financeiro','DocReceber',1);
+    wIni.WriteString('Financeiro','DuplicataCNPJ','N');;
+    wIni.WriteString('Financeiro','DuplicataIEst','N');
+    wIni.WriteInteger('Financeiro','DiasFuturos',30);
+    wIni.WriteString('Financeiro','NroDocObrigatorio','N');
+
+    wIni.WriteString('Estoques','LogFile','C:\SISV\Dados\Estoques.log');
+    wIni.WriteString('Estoques','Cadastro','C');
+    wIni.WriteString('Estoques','Apresentacao','D');
+    wIni.WriteString('Estoques','ObrigReferencia','N');
+    wIni.WriteString('Estoques','ObrigGrupo','N');
+    wIni.WriteString('Estoques','DupDescricao','N');
+    wIni.WriteString('Estoques','DupReferencia','N');
+    wIni.WriteString('Estoques','ListaPreco','N');
+
+    wIni.WriteInteger('Estoques_Entradas','EmpresaFilial',1);
+    wIni.WriteString('Estoques_Entradas','ExibeCalculo','N');
+    wIni.WriteString('Estoques_Entradas','CP_Atualiza','N');
+    wIni.WriteInteger('Estoques_Entradas','CP_Docto',1);
+    wIni.WriteString('Estoques_Entradas','Detalhamento','N');
+    wIni.WriteString('Estoques_Entradas','CriticaBases','N');
+    wIni.WriteString('Estoques_Entradas','CalcBaseIsenta','N');
+    wIni.WriteString('Estoques_Entradas','Grupos','');
+
+    wIni.WriteInteger('Estoques_Tributacao','ICM_ModoBC',3);
+    wIni.WriteFloat('Estoques_Tributacao','ICM_RedBC',0);
+    wIni.WriteInteger('Estoques_Tributacao','ICM_ModoBCST',5);
+    wIni.WriteFloat('Estoques_Tributacao','ICM_MVA',0);
+    wIni.WriteFloat('Estoques_Tributacao','ICM_RedBCST',0);
+    wIni.WriteString('Estoques_Tributacao','IPI_Sujeito','N');
+    wIni.WriteString('Estoques_Tributacao','IPI_Classe','00000');
+    wIni.WriteString('Estoques_Tributacao','IPI_Enquadramento','999');
+    wIni.WriteString('Estoques_Tributacao','IPI_Tributavel','N');
+    wIni.WriteInteger('Estoques_Tributacao','IPI_STEntrada',49);
+    wIni.WriteInteger('Estoques_Tributacao','IPI_STSaida',99);
+    wIni.WriteString('Estoques_Tributacao','IPI_Modo','V');
+    wIni.WriteString('Estoques_Tributacao','NCM','01010101');
+    wIni.WriteString('Estoques_Tributacao','Genero','0101');
+    wIni.WriteString('Estoques_Tributacao','ExTIPI','123');
+    wIni.WriteString('Estoques_Tributacao','PIS_Trb','N');
+    wIni.WriteInteger('Estoques_Tributacao','PIS_ST',99);
+    wIni.WriteFloat('Estoques_Tributacao','PIS_Aliq',0);
+    wIni.WriteFloat('Estoques_Tributacao','PIS_Unit',0);
+    wIni.WriteString('Estoques_Tributacao','Cofins_Trb','N');
+    wIni.WriteInteger('Estoques_Tributacao','Cofins_ST',99);
+    wIni.WriteFloat('Estoques_Tributacao','Cofins_Aliq',0);
+    wIni.WriteFloat('Estoques_Tributacao','Cofins_Unit',0);
+
+    wIni.WriteInteger('Vendas_CFOP','Venda',5102);
+    wIni.WriteInteger('Vendas_CFOP','VendaST',5405);
+    wIni.WriteInteger('Vendas_CFOP','Servico',5933);
+    wIni.WriteInteger('Vendas_CFOP','Venda_FE',6102);
+    wIni.WriteInteger('Vendas_CFOP','VendaST_FE',6404);
+    wIni.WriteInteger('Vendas_CFOP','Servico_FE',6933);
+
+    wIni.WriteString('OSLoja','LogFile','\Local\LogOSLoja2.log');
+    wIni.WriteString('OSLoja','CondPagto','0123456');
+    wIni.WriteInteger('OSLoja','Tecnicos',7);
+    wIni.WriteString('OSLoja','Emissao','Matr');
+    wIni.WriteString('OSLoja','Preview','S');
+    wIni.ReadInteger('OSLoja','LPP',6);
+    wIni.WriteString('OSLoja','LCab1','...');
+    wIni.WriteString('OSLoja','LCab2','LCab2');
+    wIni.WriteString('OSLoja','LCab3','LCab3');
+    wIni.WriteString('OSLoja','LObs01','LObs01');
+    wIni.WriteString('OSLoja','LObs02','LObs02');
+    wIni.WriteString('OSLoja','LObs03','LObs03');
+    wIni.WriteString('OSLoja','LObs04','LObs04');
+    wIni.WriteString('OSLoja','LObs05','LObs05');
+    wIni.WriteString('OSLoja','LObs06','LObs06');
+    wIni.WriteString('OSLoja','LObs07','LObs07');
+    wIni.WriteString('OSLoja','LObs08','LObs08');
+    wIni.WriteString('OSLoja','LObs09','LObs09');
+    wIni.WriteString('OSLoja','LObs10','');
+    wIni.WriteString('OSLoja','LObs11','');
+    wIni.WriteString('OSLoja','LObs12','');
+
+    wIni.WriteString('OSAC2','LctValores','N');
+    wIni.WriteString('OSAC2','LctoGeraVenda','N');
+    wIni.WriteInteger('OSAC2','ListaPreco',1);
+    wIni.WriteString('OSAC2','Logotipo','C:\LogoIndefinido.bmp');
+
+    wIni.WriteString('Locacoes_Equipamentos','IdGrupo','Equipamentos');
+    wIni.WriteString('Locacoes_Equipamentos','IdOperacoes','Locações');
+    wIni.WriteString('Locacoes_Equipamentos','IdPreco1','Diario');
+    wIni.WriteString('Locacoes_Equipamentos','IdPreco2','Semanal');
+    wIni.WriteString('Locacoes_Equipamentos','IdPreco3','Mensal');
+    wIni.WriteString('Locacoes_Equipamentos','IdPreco4','Horario');
+    wIni.WriteString('Locacoes_Equipamentos','IdPreco5','*');
+    wIni.WriteString('Locacoes_Equipamentos','PathContratos','C:\Contratos');
+    wIni.WriteFloat('Locacoes_Equipamentos','Margem',20);
+    wIni.WriteString('Locacoes_Equipamentos','HoraDevol','16:00');
+    wIni.WriteString('Locacoes_Equipamentos','Financeiro','N');
+
+    wIni.WriteString('AGB_Producao','DdProduc','C:\DadosProducao');
+    wIni.WriteString('AGB_Producao','DdLocais','C:\DadosLocais');
+    wIni.WriteString('AGB_Producao','DdImportacao','C:\SISV4\Dados');
+    wIni.WriteString('AGB_Producao','Assinala','N');
+    wIni.WriteString('AGB_Producao','ImagemFundo','fundo.bmp');
+    wIni.WriteString('AGB_Producao','LogoTela','SysLogo.bmp');
+    wIni.WriteString('AGB_Producao','LogoPrint','PrtLogo.bmp');
+    wIni.WriteString('AGB_Producao','QuadroDiario','Quadro.bmp');
+    wIni.WriteInteger('AGB_Producao','DispMinimo',10);
+    wIni.WriteInteger('AGB_Producao','MetrPadrao',1000);
+    wIni.WriteInteger('AGB_Producao','GrupoEstoque',99);
+
+    wIni.WriteString('OF_OSEspecial','Cliente','Nome do cliente');
+    wIni.WriteString('OF_OSEspecial','Comissao','2,00');
+    wIni.WriteInteger('OF_OSEspecial','PrazoPadrao',7);
+    wIni.WriteString('OF_OSEspecial','PlanilhaPadrao','PlanilhaPadrao.xls');
+
+    MessageDlg('Arquivo de inicialização' + #13 + '[ ' + wIniName + ' ] criado',mtInformation,[mbOk],0);
+  end;
+
+  with FGen
+  do begin
+    wInicial.Sistema := wIni.ReadString('Identificacao','Sistema','SISV');
+    wInicial.Empresa := wIni.ReadString('Identificacao','Empresa','Testes & Cia');
+    wInicial.DatabaseName := wIni.ReadString('Dados','DatabaseName','SISV4');
+
+    wInicial.DatabasePath := wIni.ReadString('Dados','DatabasePath','\SISV\Dados');
+    if Pos(':',wInicial.DatabasePath) = 0 then wInicial.DatabasePath := wInicial.DriveRemoto + wInicial.DatabasePath;
+
+    if wIni.ReadString('Dados','Servidor','N') = 'S' then wInicial.Servidor := True
+                                                     else wInicial.Servidor := False;
+    wInicial.LiteFull := wIni.ReadString('Dados','LiteFull','F');
+    wInicial.PathAuxiliar := wIni.ReadString('Dados','PathAuxiliar','C:\Remessas');
+    if not DirectoryExists(wInicial.PathAuxiliar) then CreateDir(wInicial.PathAuxiliar);
+    wInicial.SenhaExclus := wIni.ReadString('Dados','SenhaExclus','SUPERMOUSE');
+
+    wInicial.CodEF := wIni.ReadInteger('Padroes','EmpresaFilial',1);
+    wInicial.Cidade := wIni.ReadString('Padroes','Cidade','Caxias do Sul');
+    wInicial.Estado := wIni.ReadString('Padroes','Estado','RS');
+    if wIni.ReadString('Padroes','AtualizaCadastro','N') = 'S' then wInicial.AtualizaCadastro := True
+                                                               else wInicial.AtualizaCadastro := False;
+    if AnsiUpperCase(wIni.ReadString('Padroes','UtilizaCEP','N')) = 'S' then wInicial.UtilizaCEP := True
+                                                                        else wInicial.UtilizaCEP := False;
+    wInicial.CadasLogFile := wIni.ReadString('Padroes','CadasLogFile','C:\SISV\Dados\LogCadastro.log');
+    wInicial.TranspLogFile := wIni.ReadString('Padroes','TranspLogFile','C:SISV\Dados\LogTransport.log');
+    wInicial.EmpregLogFile := wIni.ReadString('Padroes','EmpregLogFile','C:\SISV\Dados\LogEmpregad.log');
+    wInicial.PagRecLogFile := wIni.ReadString('Padroes','PagRecLogFile','C:\SISV\Dados\LogPagRec.log');
+    wInicial.PeriodoCC := wIni.ReadInteger('Padroes','PeriodoContaCorrente',90);
+
+    if AnsiUpperCase(wIni.ReadString('Financeiro','DetRubricas','N')) = 'S' then wInicial.DetRubricas := True
+                                                                            else wInicial.DetRubricas := False;
+    wAux := AnsiUpperCase(wIni.ReadString('Financeiro','Juros','M'));
+    if wAux = 'D' then wInicial.TpJuros := 1
+    else if wAux = 'M' then wInicial.TpJuros := 2
+                       else wInicial.TpJuros := 0;
+    wInicial.PcJuros := wIni.ReadFloat('Financeiro','PercJuros',5);
+    wInicial.PcDesc := wIni.ReadFloat('Financeiro','PercDesc',5);
+    wInicial.PcMulta := wIni.ReadFloat('Financeiro','PercMulta',3);
+    wAux := AnsiUpperCase(wIni.ReadString('Financeiro','Cobranca','B'));
+    if wAux = 'C' then wInicial.Cobranca := 0
+    else if wAux = 'B' then wInicial.Cobranca := 1
+         else if wAux = 'J' then wInicial.Cobranca := 2
+                            else wInicial.Cobranca := 3;
+    wInicial.DocPagar := wIni.ReadInteger('Financeiro','DocPagar',1);
+    wInicial.DocReceb := wIni.ReadInteger('Financeiro','DocReceber',1);
+    if AnsiUpperCase(wIni.ReadString('Financeiro','DuplicataCNPJ','N')) = 'S' then wInicial.DuplCNPJ := True
+                                                                              else wInicial.DuplCNPJ := False;
+    if AnsiUpperCase(wIni.ReadString('Financeiro','DuplicataIEst','N')) = 'S' then wInicial.DuplIEST := True
+                                                                              else wInicial.DuplIEST := False;
+    wInicial.DiasFuturos := wIni.ReadInteger('Financeiro','DiasFuturos',30);
+    if AnsiUpperCase(wIni.ReadString('Financeiro','NroDocObrigatorio','N')) = 'S' then wInicial.NroDocObrigatorio := True
+                                                                                  else wInicial.NroDocObrigatorio := False;
+
+    wInicial.EstoqLogFile := wIni.ReadString('Estoques','LogFile','C:\SISV\Dados\Estoques.log');
+    wInicial.ECadas := AnsiUpperCase(wIni.ReadString('Estoques','Cadastro','C'));
+    wInicial.EApres := AnsiUpperCase(wIni.ReadString('Estoques','Apresentacao','D'));
+    if AnsiUpperCase(wIni.ReadString('Estoques','ObrigReferencia','N')) = 'S' then wInicial.EObRefer := True
+                                                                              else wInicial.EObRefer := False;
+    if AnsiUpperCase(wIni.ReadString('Estoques','ObrigGrupo','N')) = 'S' then wInicial.EObGrupo := True
+                                                                         else wInicial.EObGrupo := False;
+    if AnsiUpperCase(wIni.ReadString('Estoques','DupDescricao','N')) = 'S' then wInicial.EDupDescr := True
+                                                                           else wInicial.EDupDescr := False;
+    if AnsiUpperCase(wIni.ReadString('Estoques','DupReferencia','N')) = 'S' then wInicial.EDupRefer := True
+                                                                            else wInicial.EDupRefer := False;
+    if AnsiUpperCase(wIni.ReadString('Estoques','ListaPreco','N')) = 'S' then wInicial.ELPreco := True
+                                                                         else wInicial.ELPreco := False;
+    wInicial.Entr_EF := wIni.ReadInteger('Estoques_Entradas','EmpresaFilial',1);
+    if AnsiUpperCase(wIni.ReadString('Estoques_Entradas','ExibeCalculo','N')) = 'S' then wInicial.Entr_ExibeCalc := True
+                                                                                    else wInicial.Entr_ExibeCalc := False;
+    if AnsiUpperCase(wIni.ReadString('Estoques_Entradas','CP_Atualiza','N')) = 'S' then wInicial.Entr_AtlzCP := True
+                                                                                   else wInicial.Entr_AtlzCP := False;
+    wInicial.Entr_CPDoc := wIni.ReadInteger('Estoques_Entradas','CP_Docto',1);
+    if AnsiUpperCase(wIni.ReadString('Estoques_Entradas','Detalhamento','N')) = 'S' then wInicial.Entr_Detal := True
+                                                                                    else wInicial.Entr_Detal := False;
+    if AnsiUpperCase(wIni.ReadString('Estoques_Entradas','CriticaBases','N')) = 'S' then wInicial.Entr_CritBases := True
+                                                                                    else wInicial.Entr_CritBases := False;
+    if AnsiUpperCase(wIni.ReadString('Estoques_Entradas','CalcBaseIsenta','N')) = 'S' then wInicial.Entr_CalcBsIsenta := True
+                                                                                     else wInicial.Entr_CalcBsIsenta := False;
+    wInicial.Entr_AllGrupos := wIni.ReadString('Estoques_Entradas','Grupos','');
+
+    // Tributação padrão dos ítens de estoque
+    wInicial.esModoBC := wIni.ReadInteger('Estoques_Tributacao','ICM_ModoBC',3);
+    wInicial.esRedBC := wIni.ReadFloat('Estoques_Tributacao','ICM_RedBC',0);
+    wInicial.esModoBCST := wIni.ReadInteger('Estoques_Tributacao','ICM_ModoBCST',5);
+    wInicial.esMVA := wIni.ReadFloat('Estoques_Tributacao','ICM_MVA',0);
+    wInicial.esRedBCST := wIni.ReadFloat('Estoques_Tributacao','ICM_RedBCST',0);
+    if wIni.ReadString('Estoques_Tributacao','IPI_Sujeito','N') = 'S' then wInicial.esIPI := True
+                                                                      else wInicial.esIPI := False;
+    wInicial.esIPIClasse := wIni.ReadString('Estoques_Tributacao','IPI_Classe','00000');
+    wInicial.esIPIEnq := wIni.ReadString('Estoques_Tributacao','IPI_Enquadramento','999');
+    if wIni.ReadString('Estoques_Tributacao','IPI_Tributavel','N') = 'S' then wInicial.esIPITrib := True
+                                                                         else wInicial.esIPITrib := False;
+    wInicial.esIPIEnt := wIni.ReadInteger('Estoques_Tributacao','IPI_STEntrada',49);
+    wInicial.esIPISai := wIni.ReadInteger('Estoques_Tributacao','IPI_STSaida',99);
+    wInicial.esIPIModo := AnsiUpperCase(wIni.ReadString('Estoques_Tributacao','IPI_Modo','V'));
+    wInicial.esNCM := wIni.ReadString('Estoques_Tributacao','NCM','01010101');
+    wInicial.esGenero := wIni.ReadString('Estoques_Tributacao','Genero','0101');
+    wInicial.esExTIPI := wIni.ReadString('Estoques_Tributacao','ExTIPI','123');
+
+    if AnsiUpperCase(wIni.ReadString('Estoques_Tributacao','PIS_Trb','N')) = 'S' then wInicial.esPIS := True
+                                                                                 else wInicial.esPIS := False;
+    wInicial.esPISST := wIni.ReadInteger('Estoques_Tributacao','PIS_ST',99);
+    wInicial.esPISAliq := wIni.ReadFloat('Estoques_Tributacao','PIS_Aliq',0);
+    wInicial.esPISVlUnit := wIni.ReadFloat('Estoques_Tributacao','PIS_Unit',0);
+    if AnsiUpperCase(wIni.ReadString('Estoques_Tributacao','Cofins_Trb','N')) = 'S' then wInicial.esCofins := True
+                                                                                    else wInicial.esCofins := False;
+    wInicial.esCofinsST := wIni.ReadInteger('Estoques_Tributacao','Cofins_ST',99);
+    wInicial.esCofinsAliq := wIni.ReadFloat('Estoques_Tributacao','Cofins_Aliq',0);
+    wInicial.esCofinsVlUnit := wIni.ReadFloat('Estoques_Tributacao','Cofins_Unit',0);
+
+    wInicial.CFOP_Venda := wIni.ReadInteger('Vendas_CFOP','Venda',5102);
+    wInicial.CFOP_VendaST := wIni.ReadInteger('Vendas_CFOP','VendaST',5405);
+    wInicial.CFOP_Servico := wIni.ReadInteger('Vendas_CFOP','Servico',5933);
+    wInicial.CFOP_Venda_FE := wIni.ReadInteger('Vendas_CFOP','Venda_FE',6102);
+    wInicial.CFOP_VendaST_FE := wIni.ReadInteger('Vendas_CFOP','VendaST_FE',6404);
+    wInicial.CFOP_Servico_FE := wIni.ReadInteger('Vendas_CFOP','Servico_FE',6933);
+
+    wInicial.OSLogFile := wIni.ReadString('OSLoja','LogFile','\Local\LogOSLoja2.log');
+    wInicial.OSCondPagto := wIni.ReadString('OSLoja','CondPagto','0123456');
+    wInicial.Tecnicos := wIni.ReadInteger('OSLoja','Tecnicos',7);
+    wInicial.Emissao := wIni.ReadString('OSLoja','Emissao','Matr');      // Matr, Graf, Ambas
+    if AnsiUpperCase(wIni.ReadString('OSLoja','Preview','S')) = 'S' then wInicial.Preview := True
+                                                                    else wInicial.Preview := False;
+    wInicial.LPP := wIni.ReadInteger('OSLoja','LPP',6);
+    wInicial.LCab1 := wIni.ReadString('OSLoja','LCab1','...');
+    wInicial.LCab2 := wIni.ReadString('OSLoja','LCab2','95.020-360 Rua Ernesto Alves, 2337 Caxias do Sul  RS');
+    wInicial.LCab3 := wIni.ReadString('OSLoja','LCab3','Fone (54) 4009-4300   E-Mail: benhur@benhur.srv.br');
+    wInicial.LObs01 := wIni.ReadString('OSLoja','LObs01','1-Os aparelhos só serão entregues mediante a apresentação desta.');
+    wInicial.LObs02 := wIni.ReadString('OSLoja','LObs02','2-Só efetuamos consertos com pagamento A VISTA');
+    wInicial.LObs03 := wIni.ReadString('OSLoja','LObs03','3-Garantimos por 90 dias somente mao-de-obra');
+    wInicial.LObs04 := wIni.ReadString('OSLoja','LObs04','4-Autorizo o conserto do objeto constante deste documento e declaro estar ciente e de acord em retirá-lo impreterivelmente até');
+    wInicial.LObs05 := wIni.ReadString('OSLoja','LObs05','  30 dias a contar desta data.  Após este prazo autorizo a referida firma, a dispor do objeto da forma que melhor lhe convier,');
+    wInicial.LObs06 := wIni.ReadString('OSLoja','LObs06','  conforme disposto no art.1275 do Código Civil Brasileiro, sem prejuízo do art. 1278, a fim de ressarcir envetuais prejuízos.');
+    wInicial.LObs07 := wIni.ReadString('OSLoja','LObs07','5-Orçamento válido por 10 dias');
+    wInicial.LObs08 := wIni.ReadString('OSLoja','LObs08','');
+    wInicial.LObs09 := wIni.ReadString('OSLoja','LObs09','Concordo que ate R$__________________________ o conserto seja efetuado sem previo orçamento.');
+    wInicial.LObs10 := wIni.ReadString('OSLoja','LObs10','');
+    wInicial.LObs11 := wIni.ReadString('OSLoja','LObs11','');
+    wInicial.LObs12 := wIni.ReadString('OSLoja','LObs12','');
+
+    if AnsiUpperCase(wIni.ReadString('OSAC2','LctValores','N')) = 'S' then wInicial.OSAC2_LctVlr := True
+                                                                      else wInicial.OSAC2_LctVlr := False;
+    wInicial.OSAC2_GVLct := AnsiUpperCase(wIni.ReadString('OSAC2','LctoGeraVenda','N'));
+    wInicial.OSAC2_LP := wIni.ReadInteger('OSAC2','ListaPreco',1);
+    wInicial.OSAC2_Logo:= wIni.ReadString( 'OSAC2','Logotipo','C:\LogoIndefinido.bmp');
+    if Length(Trim(FGen.appUser)) = 0 then FGen.appUser := FGen.wInicial.Usuario;
+
+    wInicial.Loc_IdGrupo := wIni.ReadString('Locacoes_Equipamentos','IdGrupo','Equipamentos');
+    wInicial.Loc_IdOperacao := wIni.ReadString('Locacoes_Equipamentos','IdOperacoes','Locações');
+    wInicial.Loc_Pr1 := wIni.ReadString('Locacoes_Equipamentos','IdPreco1','Diario');
+    wInicial.Loc_Pr2 := wIni.ReadString('Locacoes_Equipamentos','IdPreco2','Semanal');
+    wInicial.Loc_Pr3 := wIni.ReadString('Locacoes_Equipamentos','IdPreco3','Mensal');
+    wInicial.Loc_Pr4 := wIni.ReadString('Locacoes_Equipamentos','IdPreco4','Horario');
+    wInicial.Loc_Pr5 := wIni.ReadString('Locacoes_Equipamentos','IdPreco5','*');
+    wInicial.Loc_PathContratos := wIni.ReadString('Locacoes_Equipamentos','PathContratos','C:\Contratos');
+    if not DirectoryExists(wInicial.Loc_PathContratos) then CreateDir(wInicial.Loc_PathContratos);
+    wInicial.Loc_Margem := wIni.ReadFloat('Locacoes_Equipamentos','Margem',20);
+    wInicial.Loc_HrDevol := wIni.ReadString('Locacoes_Equipamentos','HoraDevol','16:00');
+    if AnsiUpperCase(wIni.ReadString('Locacoes_Equipamentos','Financeiro','N')) = 'S' then wInicial.Loc_Financeiro := True
+                                                                                      else wInicial.Loc_Financeiro := False;
+
+    wInicial.AGB_DdProd := wIni.ReadString('AGB_Producao','DdProduc','C:\DadosProducao');
+    wInicial.AGB_DdLocais := wIni.ReadString('AGB_Producao','DdLocais','C:\DadosLocais');
+    if AnsiUpperCase(wIni.ReadString('AGB_Producao','Assinala','N')) = 'S' then wInicial.AGB_Assinala := True
+                                                                           else wInicial.AGB_Assinala := False;
+    wInicial.AGB_ImgFundo := wIni.ReadString('AGB_Producao','ImagemFundo','fundo.bmp');
+    wInicial.AGB_LogoTela := wIni.ReadString('AGB_Producao','LogoTela','SysLogo.bmp');
+    wInicial.AGB_LogoPrint := wIni.ReadString('AGB_Producao','LogoPrint','PrtLogo.bmp');
+    wInicial.AGB_Quadro := wIni.ReadString('AGB_Producao','QuadroDiario','Quadro.bmp');
+    wInicial.AGB_DispMinimo := wIni.ReadInteger('AGB_Producao','DispMinimo',2);
+    wInicial.AGB_MetrPadrao := wIni.ReadInteger('AGB_Producao','MetrPadrao',1000);
+    wInicial.AGB_GrupoEstoque := wIni.ReadInteger('AGB_Producao','GrupoEstoque',99);
+
+    wInicial.OF_OSEspCliente := wIni.ReadString('OF_OSEspecial','Cliente','Cliente/Nome do cliente');
+    wInicial.OF_OSEspComss := wIni.ReadFloat('OF_OSEspecial','Comissao',2);
+    wInicial.OF_PrazoPadrao := wIni.ReadInteger('OF_OSEspecial','PrazoPadrao',7);
+    wInicial.OF_PlanilhaPadrao := wIni.ReadString('OF_OSEspecial','PlanilhaPadrao','C:\PlanilhaPadrao.xls');
+
+  end;
+
+  wIni.Free;
+
+end;
+
+
+}
